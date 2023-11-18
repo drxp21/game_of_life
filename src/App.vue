@@ -201,8 +201,8 @@ onMounted(() => {
     <!-- Cells -->
     <button
       :disabled="isRunning"
-      v-for="(c, index) in allCells"
-      class="border border-gray-800 aspect-square disabled:cursor-not-allowed rounded-md"
+      v-for="c in allCells"
+      class="border border-gray-800 aspect-square h-full w-full disabled:cursor-not-allowed rounded-md"
       :class="
         c.active
           ? 'bg-cyan-400 duration-[' + intervalSpeed / 2 + ']'
