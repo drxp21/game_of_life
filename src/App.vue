@@ -5,7 +5,7 @@ let isRunning = ref(false);
 let ostIsPlaying = ref(false);
 let sfxIsPlaying = ref(false);
 
-let show = ref(true);
+let show = ref(false);
 let rows = ref(40);
 let generationCount = ref(0);
 let allCells = ref([]);
