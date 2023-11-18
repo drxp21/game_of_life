@@ -5,7 +5,7 @@ let isRunning = ref(false);
 let ostIsPlaying = ref(false);
 let sfxIsPlaying = ref(false);
 
-let show = ref(false);
+let show = ref(true);
 let rows = ref(40);
 let generationCount = ref(0);
 let allCells = ref([]);
@@ -507,7 +507,7 @@ onBeforeUnmount(() => {
         >
           <div
             v-show="show"
-            class="mb-6 bg-gray-800 rounded-lg overflow-hidden shadow-xl transform transition-all mx-auto text-white p-5 w-1/2"
+            class="mb-6 bg-gray-800 rounded-lg overflow-hidden shadow-xl transform transition-all mx-auto text-white p-5 w-5/6 md:w-1/2"
           >
             <div v-if="show" v-html="modalContent"></div>
           </div>
