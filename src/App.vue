@@ -6,17 +6,38 @@ let ostIsPlaying = ref(false);
 let show = ref(false);
 let rows = ref(40);
 let allCells = ref([]);
+let activeCells = ref([]);
 let oldActiveCells = ref([]);
 let intervalId = ref();
+let modalContent = ref();
 let ost = ref(new Audio());
-let intervalSpeed = ref(1000);
+let intervalSpeed = ref(100);
 let spawnEffect = ref();
 let deathEffect = ref();
 
+const explanationText = ` Le Jeu de la Vie, créé par John Conway, est un automate cellulaire
+              fascinant.<br />
+              Il se déroule sur une grille bidimensionnelle , où chaque case
+              peut être soit vivante, soit morte.
+              <br /><br />
+              Les règles simples déterminent l'évolution des cellules au fil des
+              générations:
+              <br />- Une cellule vivante survit si elle a 2 ou 3 voisins
+              vivants, sinon elle meurt de solitude ou de surpopulation. <br />-
+              Une cellule morte peut devenir vivante si elle a exactement 3
+              voisins vivants. <br /><br />
+              Le jeu commence avec une configuration initiale, et les joueurs
+              observent comment cette société cellulaire évolue de génération en
+              génération, souvent conduisant à des motifs complexes, des
+              oscillateurs, voire des formes stables. <br />
+              Bien que les règles soient simples, le Jeu de la Vie peut produire
+              des résultats surprenants et offre une perspective intéressante
+              sur l'émergence de la complexité à partir de règles élémentaires.`;
+
 const loadCells = () => {
   allCells.value = [];
-  if (rows.value > 50) {
-    rows.value = 50;
+  if (rows.value > 65) {
+    rows.value = 65;
   }
   for (let i = 0; i < rows.value; i++) {
     for (let j = 0; j < rows.value; j++) {
@@ -26,6 +47,20 @@ const loadCells = () => {
         active: false,
       });
     }
+  }
+};
+
+const defaulConfig = () => {
+  rows.value = 40;
+  loadCells();
+  const indices = [
+    440, 441, 480, 481, 450, 490, 530, 411, 571, 372, 373, 612, 613, 494, 415,
+    575, 456, 496, 536, 497, 380, 381, 420, 421, 460, 461, 342, 502, 304, 504,
+    344, 544, 394, 395, 435, 434,
+  ];
+
+  for (const index of indices) {
+    allCells.value[index].active = true;
   }
 };
 
@@ -62,28 +97,37 @@ const findingNeighbors = (x, y) => {
 const activeNeighborCount = (x, y) => {
   return findingNeighbors(x, y).filter((s) => s.active).length;
 };
-const stop = () => {
+const pause = () => {
   clearInterval(intervalId.value);
   isRunning.value = false;
 };
-const clear = () => {};
+const stop = () => {
+  pause();
+  modalContent.value = "Fin de la simulation";
+  show.value = true;
+};
+const clear = () => {
+  allCells.value.forEach((e) => {
+    e.active = false;
+  });
+  isRunning.value = false;
+};
 const run = () => {
   if (isRunning.value) {
-    stop();
+    pause();
     return;
   }
   isRunning.value = true;
+  // {
+  //   console.log('louy khew lehui ?????')
+  // }
 
   intervalId.value = setInterval(() => {
     let cellsToEnable = [];
     let cellsToDisable = [];
-    let oActiveCells = oldActiveCells.value;
-    let activeCells = allCells.value.filter((s) => s.active);
-    if (activeCells.length < 1 || compareArrays(oActiveCells, activeCells)) {
-      // stop();
-      // alert("Fin de la simulation");
-    }
-    activeCells.forEach((e) => {
+
+    activeCells.value = allCells.value.filter((s) => s.active);
+    activeCells.value.forEach((e) => {
       let sCount = activeNeighborCount(e.x, e.y);
       if (sCount == 0) {
         cellsToDisable.push(e);
@@ -102,25 +146,22 @@ const run = () => {
             cellsToDisable.push(n);
           }
         });
-      } catch (est) {
-        // stop();
-        // alert("Fin de la simulation");
-        // return;
-      }
+      } catch (est) {}
     });
 
     cellsToEnable.forEach((s) => {
       s.active = true;
-      spawnEffect.value.play();
     });
 
     cellsToDisable.forEach((s) => {
       s.active = false;
-      deathEffect.value.play();
     });
+
     oldActiveCells.value = allCells.value.filter((s) => s.active);
+    compareArrays(oldActiveCells.value, activeCells.value) ? stop() : null;
   }, intervalSpeed.value);
 };
+
 const activateCell = (c) => {
   if (c.active) {
     allCells.value.find((s) => s.x == c.x && s.y == c.y).active = false;
@@ -140,12 +181,13 @@ const muteOst = () => {
   ost.value.volume = ost.value.volume == 0 ? 1 : 0;
 };
 onMounted(() => {
-  loadCells();
+  defaulConfig();
 
   ost.value = new Audio("/audios/ost-gol.mp3");
   ost.value.loop = true;
   deathEffect.value = new Audio("/audios/death.m4a");
   spawnEffect.value = new Audio("/audios/spawn.m4a");
+  spawnEffect.value.volume = 0.1;
 });
 </script>
 
@@ -156,13 +198,16 @@ onMounted(() => {
     style="display: grid"
     :style="`grid-template-columns: repeat(${rows}, minmax(0, 1fr))`"
   >
-    <!-- Container -->
     <!-- Cells -->
     <button
       :disabled="isRunning"
-      v-for="c in allCells"
-      class="border border-gray-800 aspect-square transition-all duration-400 disabled:cursor-not-allowed rounded-md"
-      :class="c.active ? 'bg-green-500' : ''"
+      v-for="(c, index) in allCells"
+      class="border border-gray-800 aspect-square disabled:cursor-not-allowed rounded-md"
+      :class="
+        c.active
+          ? 'bg-cyan-400 duration-[' + intervalSpeed / 2 + ']'
+          : 'duration-[' + intervalSpeed / 2 + ']'
+      "
       @click="activateCell(c)"
     ></button>
   </div>
@@ -207,7 +252,10 @@ onMounted(() => {
           />
         </svg>
       </button>
-      <button @click="show = true" class="ml-2 p-2 rounded-full bg-gray-800">
+      <button
+        @click="(modalContent = explanationText), (show = true)"
+        class="ml-2 p-2 rounded-full bg-gray-800"
+      >
         <svg
           fill="#000000"
           version="1.1"
@@ -234,16 +282,14 @@ onMounted(() => {
     </div>
 
     <div class="mt-5">
-      <label class="text-xs">Vitesse d'iteration</label>
-      <select
+      <label class="text-xs">Vitesse d'itération en (ms)</label>
+      <input
         v-model="intervalSpeed"
+        min="0"
+        type="number"
         class="bg-gray-800 text-white rounded-md p-1 text-xs disabled:cursor-not-allowed w-full"
         :disabled="isRunning"
-      >
-        <option value="100">100 ms</option>
-        <option value="500">500 ms</option>
-        <option value="1000">1 s</option>
-      </select>
+      />
     </div>
     <div class="mt-5">
       <label class="text-xs">Nombre de colonnes </label>
@@ -259,7 +305,7 @@ onMounted(() => {
     </div>
     <div class="flex gap-2">
       <button
-        class="p-3 bg-teal-700 rounded-full shadow-lg text-sm mt-5"
+        class="p-3 bg-teal-600 rounded-full shadow-lg text-sm mt-5"
         @click="run"
       >
         <svg
@@ -297,9 +343,9 @@ onMounted(() => {
         </svg>
       </button>
       <button
-        class="px-3 py-2 bg-yellow-500 rounded-full shadow-lg text-sm mt-5"
-        @click="clear"
-        title="Lancer/Arreter la simulation"
+        class="px-3 py-2 bg-green-500 rounded-full shadow-lg text-sm mt-5"
+        @click="defaulConfig"
+        title="Retourner à la configuration de base"
       >
         <svg
           width="20px"
@@ -333,8 +379,9 @@ onMounted(() => {
         </svg>
       </button>
       <button
-        class="px-3 py-2 bg-red-700 rounded-full shadow-lg text-sm mt-5"
-        title="Revenir a la simulation de base"
+        class="px-3 py-2 bg-red-500 rounded-full shadow-lg text-sm mt-5"
+        title="Réinitialiser"
+        @click="clear"
       >
         <svg
           fill="#000000"
@@ -387,26 +434,7 @@ onMounted(() => {
             v-show="show"
             class="mb-6 bg-gray-800 rounded-lg overflow-hidden shadow-xl transform transition-all mx-auto text-white p-5 w-1/2"
           >
-            <div v-if="show">
-              Le Jeu de la Vie, créé par John Conway, est un automate cellulaire
-              fascinant.<br />
-              Il se déroule sur une grille bidimensionnelle , où chaque case
-              peut être soit vivante, soit morte.
-              <br /><br />
-              Les règles simples déterminent l'évolution des cellules au fil des
-              générations:
-              <br />- Une cellule vivante survit si elle a 2 ou 3 voisins
-              vivants, sinon elle meurt de solitude ou de surpopulation. <br />-
-              Une cellule morte peut devenir vivante si elle a exactement 3
-              voisins vivants. <br /><br />
-              Le jeu commence avec une configuration initiale, et les joueurs
-              observent comment cette société cellulaire évolue de génération en
-              génération, souvent conduisant à des motifs complexes, des
-              oscillateurs, voire des formes stables. <br />
-              Bien que les règles soient simples, le Jeu de la Vie peut produire
-              des résultats surprenants et offre une perspective intéressante
-              sur l'émergence de la complexité à partir de règles élémentaires.
-            </div>
+            <div v-if="show" v-html="modalContent"></div>
           </div>
         </transition>
       </div>

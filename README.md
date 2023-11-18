@@ -1,2 +1,4 @@
 # game_of_life
-Le jeu de la vie de John Conway
+Ce repo est une implemantation du <a href="https://fr.wikipedia.org/wiki/Jeu_de_la_vie">Jeu de la vie<a/> de John Conway
+
+
