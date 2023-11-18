@@ -19,7 +19,7 @@ let intervalSpeed = ref(100);
 let spawnEffect = ref();
 let deathEffect = ref();
 
-const explanationText = ` Le Jeu de la Vie, créé par John Conway, est un automate cellulaire
+const explanationText = `Le Jeu de la Vie, créé par John Conway, est un automate cellulaire
               fascinant.<br />
               Il se déroule sur une grille bidimensionnelle , où chaque case
               peut être soit vivante, soit morte.
@@ -107,50 +107,52 @@ const pause = () => {
 };
 const stop = () => {
   pause();
-  modalContent.value = `Fin de la simulation ! <br /> Cette configuration cellulaire a survecu ${generationCount.value} génération(s)`;
+  modalContent.value = `<strong> Fin de la simulation ✅. </strong> <br /> Cette configuration cellulaire a survecu ${generationCount.value} génération(s)`;
   show.value = true;
   generationCount.value = 0;
 };
+
 const clear = () => {
   allCells.value.forEach((e) => {
     e.active = false;
   });
   isRunning.value = false;
 };
+
 const run = () => {
   if (isRunning.value) {
     pause();
     return;
   }
   isRunning.value = true;
-
   intervalId.value = setInterval(() => {
     let cellsToEnable = [];
     let cellsToDisable = [];
 
     activeCells.value = allCells.value.filter((s) => s.active);
     activeCells.value.forEach((e) => {
-      let sCount = activeNeighborCount(e.x, e.y);
-      if (sCount == 0) {
+      // disable a cell if it is alone
+      if (activeNeighborCount(e.x, e.y) == 0) {
         cellsToDisable.push(e);
       }
 
-      try {
-        findingNeighbors(e.x, e.y).forEach((n) => {
-          let nCount = activeNeighborCount(n.x, n.y);
-
-          if (
-            (!n.active && nCount == 3) ||
-            (n.active && [2, 3].includes(nCount))
-          ) {
-            cellsToEnable.push(n);
-          } else if (n.active && (nCount < 2 || nCount > 3)) {
-            cellsToDisable.push(n);
-          }
-        });
-      } catch (est) {}
+      findingNeighbors(e.x, e.y).forEach((n) => {
+        let nCount = activeNeighborCount(n.x, n.y);
+        // find cells that match conditions to be enabled
+        if (
+          (!n.active && nCount === 3) ||
+          (n.active && [2, 3].includes(nCount))
+        ) {
+          cellsToEnable.push(n);
+        }
+        // find cells that match conditions to be disabled
+        else if (n.active && (nCount < 2 || nCount > 3)) {
+          cellsToDisable.push(n);
+        }
+      });
     });
 
+    // committing changes
     cellsToEnable.forEach((s) => {
       s.active = true;
     });
@@ -159,18 +161,25 @@ const run = () => {
       s.active = false;
     });
 
+    // checking if a pattern from the previous previous iteration is not repeating itself
     if (generationCount.value % 2 == 0) {
+      // pause the simulation to avoid infinite loop
       if (compareArrays(olderActiveCells.value, activeCells.value)) {
         modalContent.value =
-          "Cette simulation va boucler infiniment. Ajoutez une cellule vivante ou supprimez en une pour changer son issue.";
+          "<strong> Cette simulation risque de tourner indéfiniment 😐.</strong> <br /> Pour changer son déroulement, il suffit d'ajouter une cellule vivante ou d'en retirer une .";
         show.value = true;
         pause();
       }
+
       olderActiveCells.value = oldActiveCells.value;
     }
+
+    // checking if a pattern from the previous iteration is not repeating itself
     oldActiveCells.value = allCells.value.filter((s) => s.active);
-    generationCount.value++;
+    // stop the simulation if no new cells are born or die
+
     compareArrays(oldActiveCells.value, activeCells.value) ? stop() : null;
+    generationCount.value++;
   }, intervalSpeed.value);
 };
 
@@ -215,7 +224,7 @@ onBeforeUnmount(() => {
   <div class="bg-gray-900 min-h-screen flex flex-col md:flex-row">
     <!-- Menu -->
     <div
-      class="text-white w-full md:w-44 flex flex-row md:flex-col px-3 md:pt-5 md:pl-5 items-center gap-2 h-44 "
+      class="text-white w-full md:w-44 flex flex-row md:flex-col px-3 md:pt-5 md:pl-5 items-center gap-2 h-44"
     >
       <div class="w-full flex flex-col md:flex-row items-start flex-[1] gap-3">
         <!-- Music toggle button -->
@@ -328,7 +337,7 @@ onBeforeUnmount(() => {
         <div>
           <!-- Iteration speed input -->
 
-          <label class="text-xs">Vitesse d'itération en (ms)</label>
+          <label class="text-xs">Vitesse d'itération (en ms)</label>
           <input
             v-model="intervalSpeed"
             min="0"
