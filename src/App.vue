@@ -212,11 +212,10 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="bg-gray-900 min-h-screen flex flex-wrap md:flex-no-wrap">
-
+  <div class="bg-gray-900 min-h-screen flex flex-col md:flex-row">
     <!-- Menu -->
     <div
-      class=" text-white w-full md:w-44  flex flex-row md:flex-col pt-5 pl-5 items-center gap-2"
+      class="text-white w-full md:w-44 flex flex-row md:flex-col px-3 md:pt-5 md:pl-5 items-center gap-2 h-44 "
     >
       <div class="w-full flex flex-col md:flex-row items-start flex-[1] gap-3">
         <!-- Music toggle button -->
@@ -325,33 +324,33 @@ onBeforeUnmount(() => {
         </button>
       </div>
 
-     <div class="flex flex-col flex-[3]">
-      <div >
-        <!-- Iteration speed input -->
+      <div class="flex flex-col flex-[3]">
+        <div>
+          <!-- Iteration speed input -->
 
-        <label class="text-xs">Vitesse d'itération en (ms)</label>
-        <input
-          v-model="intervalSpeed"
-          min="0"
-          type="number"
-          class="bg-gray-800 text-white rounded-md p-1 text-xs disabled:cursor-not-allowed w-full"
-          :disabled="isRunning"
-        />
+          <label class="text-xs">Vitesse d'itération en (ms)</label>
+          <input
+            v-model="intervalSpeed"
+            min="0"
+            type="number"
+            class="bg-gray-800 text-white rounded-md p-1 text-xs disabled:cursor-not-allowed w-full"
+            :disabled="isRunning"
+          />
+        </div>
+        <div class="mt-5">
+          <!-- Column count input -->
+          <label class="text-xs">Nombre de colonnes </label>
+          <input
+            type="number"
+            v-model="rows"
+            @input="loadCells"
+            min="0"
+            max="60"
+            class="bg-gray-800 text-white rounded-md p-1 text-xs disabled:cursor-not-allowed w-full"
+            :disabled="isRunning"
+          />
+        </div>
       </div>
-      <div class="mt-5">
-        <!-- Column count input -->
-        <label class="text-xs">Nombre de colonnes </label>
-        <input
-          type="number"
-          v-model="rows"
-          @input="loadCells"
-          min="0"
-          max="60"
-          class="bg-gray-800 text-white rounded-md p-1 text-xs disabled:cursor-not-allowed w-full"
-          :disabled="isRunning"
-        />
-      </div>
-     </div>
       <div class="flex gap-2 items-start flex-[1]">
         <!-- Play button -->
         <button
@@ -454,7 +453,7 @@ onBeforeUnmount(() => {
 
     <!-- Grid  -->
     <div
-      class="pr-0 md:px-5 py-5  gap-0 w-full"
+      class="pr-0 md:px-5 py-5 gap-0 w-full"
       style="display: grid"
       :style="`grid-template-columns: repeat(${rows}, minmax(0, 1fr))`"
     >
