@@ -246,7 +246,7 @@ onBeforeUnmount(() => {
       >
       <div class="w-full flex flex-col md:flex-row justify-center flex-[1] gap-3">
         <!-- Music toggle button -->
-        <button @click="muteOst" class="p-2 rounded-full bg-gray-800 ml-2">
+        <button @click="muteOst" class="p-2 rounded-full bg-gray-800 ml-2 flex justify-center">
           <svg
             v-if="ostIsPlaying"
             width="20px"
@@ -284,7 +284,7 @@ onBeforeUnmount(() => {
         </button>
 
         <!-- Sfx toggle button -->
-        <button @click="muteSfx" class="p-2 rounded-full bg-gray-800 ml-2">
+        <button @click="muteSfx" class="p-2 rounded-full bg-gray-800 ml-2 flex justify-center">
           <svg
             width="20px"
             height="20px"
@@ -323,8 +323,8 @@ onBeforeUnmount(() => {
 
         <!-- Info button  -->
         <button
+        class="ml-2 p-2 rounded-full bg-gray-800 flex justify-center"
           @click="(modalContent = explanationText), (show = true)"
-          class="ml-2 p-2 rounded-full bg-gray-800"
         >
           <svg
             fill="#000000"
