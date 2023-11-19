@@ -242,7 +242,7 @@ onBeforeUnmount(() => {
       class="text-white w-full md:w-56 flex flex-row md:flex-col px-3 md:pt-5 md:pl-5 items-center gap-2 h-44"
     >
     <div
-     class="text-sm font-bold">Le jeu de la vie</div
+     class="text-sm font-bold hidden md:block">Le jeu de la vie</div
       >
       <div class="w-full flex flex-col md:flex-row justify-center flex-[1] gap-3">
         <!-- Music toggle button -->
