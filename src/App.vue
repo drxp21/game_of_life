@@ -118,7 +118,7 @@ const pause = () => {
 };
 const stop = () => {
   pause();
-  modalContent.value = `<strong> Fin de la simulation ✅. </strong> <br /> <div class="text-xs font-semibold">
+  modalContent.value = `<strong class="font-serif"> Fin de la simulation ✅. </strong> <br /> <div class="text-xs">
     Cette configuration cellulaire a survécu ${generationCount.value} génération(s)
     </div>`;
   show.value = true;
@@ -181,7 +181,7 @@ const run = () => {
     if (generationCount.value % 2 == 0) {
       // pause the simulation to avoid infinite loop
       if (compareArrays(olderActiveCells.value, activeCells.value)) {
-        modalContent.value = `<strong> Cette configuration cellulaire va tourner indéfiniment 😐.</strong> <br /> <div class="text-xs font-semibold">Elle a survécu ${generationCount.value} génération(s) <br /> Pour changer son déroulement, il suffit d'ajouter une (ou plusieurs) cellule vivante ou d'en retirer .</div>`;
+        modalContent.value = `<strong class="font-serif"> Cette configuration cellulaire va tourner indéfiniment 😐.</strong> <br /> <div class="text-xs">Elle a survécu ${generationCount.value} génération(s) <br /> Pour changer son déroulement, il suffit d'ajouter une (ou plusieurs) cellule vivante ou d'en retirer .</div>`;
         show.value = true;
         pause();
       }
