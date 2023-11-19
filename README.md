@@ -45,6 +45,7 @@
   <li><strong>Démarrer la simulation</strong> : Lancez la simulation pour observer l'évolution des cellules au fil du temps.</li>
   <li><strong>Arrêter la simulation</strong> : Mettez la simulation en pause à tout moment pour analyser l'état actuel de la grille.</li>
   <li><strong>Réinitialiser la grille</strong> : Réinitialisez la grille à son état initial.</li>
+  <li><strong>Randomiser</strong> :Donner vie à des cellules au hasard sur la grille.</li>
   <li><strong>Ajuster la vitesse</strong> : Utilisez le contrôle de vitesse pour modifier la vitesse de la simulation selon vos préférences.</li>
 </ul>
 
@@ -59,8 +60,9 @@
 <h1>Game of Life Implementation with Vue.js</h1>
 <p>
 
-  Welcome to the <a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life"> Game of Life </a>implementation using Vue.js! This project is a web-based version of Conway's Game of Life, a cellular automaton devised by the mathematician John Conway. The game involves a grid of cells that evolve based on a set of simple rules, creating fascinating and complex patterns.
-  Here is a <a href="https://game-of-life-eight-amber.vercel.app/">demo</a> !
+Welcome to the <a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life"> Game of Life </a>implementation using Vue.js! This project is a web-based version of Conway's Game of Life, a cellular automaton devised by the mathematician John Conway. The game involves a grid of cells that evolve based on a set of simple rules, creating fascinating and complex patterns.
+Here is a <a href="https://game-of-life-eight-amber.vercel.app/">demo</a> !
+
 </p>
 
 <h2>Features</h2>
@@ -103,6 +105,7 @@
   <li><strong>Start Simulation</strong>: Begin the simulation to observe the evolution of the cells over time.</li>
   <li><strong>Stop Simulation</strong>: Pause the simulation at any point to analyze the current state of the grid.</li>
   <li><strong>Reset Grid</strong>: Reset the grid to its initial state.</li>
+  <li><strong>Randomize</strong>: Give birth to random cells on the grid.</li>
   <li><strong>Adjust Speed</strong>: Use the speed control to change the simulation speed according to your preference.</li>
 </ul>
 

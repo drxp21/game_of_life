@@ -16,6 +16,7 @@ let intervalId = ref();
 let modalContent = ref();
 let ost = ref(new Audio());
 let intervalSpeed = ref(100);
+let zoomQty = ref(79);
 let spawnEffect = ref();
 let deathEffect = ref();
 
@@ -68,6 +69,12 @@ const defaultConfig = () => {
   }
 };
 
+const randomize = () => {
+  allCells.value.forEach((e) => {
+    e.active = parseInt(Math.random() * 10) % 2 == 1 ? true : false;
+  });
+};
+
 const compareArrays = (array1, array2) => {
   return (
     array1.length === array2.length && array1.every((el) => array2.includes(el))
@@ -99,7 +106,11 @@ const findingNeighbors = (x, y) => {
 };
 
 const activeNeighborCount = (x, y) => {
-  return findingNeighbors(x, y).filter((s) => s.active).length;
+  try {
+    return findingNeighbors(x, y).filter((s) => s.active).length;
+  } catch (error) {
+    allCells.value.find((s) => s.x == x && s.y == y).active = false;
+  }
 };
 const pause = () => {
   clearInterval(intervalId.value);
@@ -107,7 +118,7 @@ const pause = () => {
 };
 const stop = () => {
   pause();
-  modalContent.value = `<strong> Fin de la simulation ✅. </strong> <br /> Cette configuration cellulaire a survecu ${generationCount.value} génération(s)`;
+  modalContent.value = `<strong> Fin de la simulation ✅. </strong> <br /> Cette configuration cellulaire a survécu ${generationCount.value} génération(s)`;
   show.value = true;
   generationCount.value = 0;
 };
@@ -135,21 +146,24 @@ const run = () => {
       if (activeNeighborCount(e.x, e.y) == 0) {
         cellsToDisable.push(e);
       }
-
-      findingNeighbors(e.x, e.y).forEach((n) => {
-        let nCount = activeNeighborCount(n.x, n.y);
-        // find cells that match conditions to be enabled
-        if (
-          (!n.active && nCount === 3) ||
-          (n.active && [2, 3].includes(nCount))
-        ) {
-          cellsToEnable.push(n);
-        }
-        // find cells that match conditions to be disabled
-        else if (n.active && (nCount < 2 || nCount > 3)) {
-          cellsToDisable.push(n);
-        }
-      });
+      try {
+        findingNeighbors(e.x, e.y)?.forEach((n) => {
+          let nCount = activeNeighborCount(n.x, n.y);
+          // find cells that match conditions to be enabled
+          if (
+            (!n.active && nCount === 3) ||
+            (n.active && [2, 3].includes(nCount))
+          ) {
+            cellsToEnable.push(n);
+          }
+          // find cells that match conditions to be disabled
+          else if (n.active && (nCount < 2 || nCount > 3)) {
+            cellsToDisable.push(n);
+          }
+        });
+      } catch (e) {
+        e.active = false;
+      }
     });
 
     // committing changes
@@ -165,8 +179,7 @@ const run = () => {
     if (generationCount.value % 2 == 0) {
       // pause the simulation to avoid infinite loop
       if (compareArrays(olderActiveCells.value, activeCells.value)) {
-        modalContent.value =
-          "<strong> Cette simulation risque de tourner indéfiniment 😐.</strong> <br /> Pour changer son déroulement, il suffit d'ajouter une cellule vivante ou d'en retirer une .";
+        modalContent.value = `<strong> Cette configuration cellulaire va tourner indéfiniment 😐.</strong> <br />Elle a survécu ${generationCount.value} génération(s) <br /> Pour changer son déroulement, il suffit d'ajouter une (ou plusieurs) cellule vivante ou d'en retirer .`;
         show.value = true;
         pause();
       }
@@ -224,7 +237,7 @@ onBeforeUnmount(() => {
   <div class="bg-gray-900 min-h-screen flex flex-col md:flex-row">
     <!-- Menu -->
     <div
-      class="text-white w-full md:w-44 flex flex-row md:flex-col px-3 md:pt-5 md:pl-5 items-center gap-2 h-44"
+      class="text-white w-full md:w-56 flex flex-row md:flex-col px-3 md:pt-5 md:pl-5 items-center gap-2 h-44"
     >
       <div class="w-full flex flex-col md:flex-row items-start flex-[1] gap-3">
         <!-- Music toggle button -->
@@ -360,10 +373,10 @@ onBeforeUnmount(() => {
           />
         </div>
       </div>
-      <div class="flex gap-2 items-start flex-[1]">
+      <div class="grid grid-cols-2 justify-center md:flex gap-2 items-start flex-[1]">
         <!-- Play button -->
         <button
-          class="p-3 bg-teal-600 rounded-full shadow-lg text-sm mt-5"
+          class="p-3 bg-teal-600 rounded-full shadow-lg text-sm mt-5 flex justify-center"
           @click="run"
         >
           <svg
@@ -400,9 +413,33 @@ onBeforeUnmount(() => {
             />
           </svg>
         </button>
+
+        <!-- Randomize -->
+        <button
+          class="p-3 bg-amber-400 rounded-full shadow-lg text-sm mt-5 flex justify-center"
+          @click="randomize"
+          title="Lancer une configuration au hasard"
+        >
+          <svg
+            width="20px"
+            height="20px"
+            class="invert"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M18 4L21 7M21 7L18 10M21 7H17C16.0707 7 15.606 7 15.2196 7.07686C13.6329 7.39249 12.3925 8.63288 12.0769 10.2196C12 10.606 12 11.0707 12 12C12 12.9293 12 13.394 11.9231 13.7804C11.6075 15.3671 10.3671 16.6075 8.78036 16.9231C8.39397 17 7.92931 17 7 17H3M18 20L21 17M21 17L18 14M21 17H17C16.0707 17 15.606 17 15.2196 16.9231C15.1457 16.9084 15.0724 16.8917 15 16.873M3 7H7C7.92931 7 8.39397 7 8.78036 7.07686C8.85435 7.09158 8.92758 7.1083 9 7.12698"
+              stroke="#000000"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
         <!-- Reset button -->
         <button
-          class="p-3 bg-green-500 rounded-full shadow-lg text-sm mt-5"
+          class="p-3 bg-cyan-500 rounded-full shadow-lg text-sm mt-5 flex justify-center"
           @click="defaultConfig"
           title="Retourner à la configuration de base"
         >
@@ -440,7 +477,7 @@ onBeforeUnmount(() => {
 
         <!-- Clear button -->
         <button
-          class="p-3 bg-red-500 rounded-full shadow-lg text-sm mt-5"
+          class="p-3 bg-red-500 rounded-full shadow-lg text-sm mt-5 flex justify-center"
           title="Réinitialiser"
           @click="clear"
         >
@@ -461,23 +498,98 @@ onBeforeUnmount(() => {
     </div>
 
     <!-- Grid  -->
-    <div
-      class="pr-0 md:px-5 py-5 gap-0 w-full"
-      style="display: grid"
-      :style="`grid-template-columns: repeat(${rows}, minmax(0, 1fr))`"
-    >
-      <!-- Cells -->
-      <button
-        :disabled="isRunning"
-        v-for="c in allCells"
-        class="border border-gray-800 aspect-square h-full w-full disabled:cursor-not-allowed rounded-md"
-        :class="
-          c.active
-            ? 'bg-cyan-400 duration-[' + intervalSpeed / 2 + ']'
-            : 'duration-[' + intervalSpeed / 2 + ']'
-        "
-        @click="activateCell(c)"
-      ></button>
+    <div class="overflow-auto h-screen w-full">
+      <div class="w-full flex justify-center items-center h-10 my-5">
+        <button class="p-2 rounded-full bg-gray-800 ml-2" @click="zoomQty-=10">
+          <svg
+            width="20px"
+            height="20px"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            class="invert"
+          >
+            <path
+              d="M10 17C13.866 17 17 13.866 17 10C17 6.13401 13.866 3 10 3C6.13401 3 3 6.13401 3 10C3 13.866 6.13401 17 10 17Z"
+              stroke="#000000"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M20.9992 21L14.9492 14.95"
+              stroke="#000000"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M6 10H14"
+              stroke="#000000"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+        <button class="p-2 rounded-full bg-gray-800 ml-2" @click="zoomQty+=10">
+          <svg
+            width="20px"
+            height="20px"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            class="invert"
+          >
+            <path
+              d="M10 17C13.866 17 17 13.866 17 10C17 6.13401 13.866 3 10 3C6.13401 3 3 6.13401 3 10C3 13.866 6.13401 17 10 17Z"
+              stroke="#000000"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M20.9992 21L14.9492 14.95"
+              stroke="#000000"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M6 10H14"
+              stroke="#000000"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M10 6V14"
+              stroke="#000000"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+      </div>
+      <div
+        class="pr-0 md:px-5 gap-0 mx-auto "
+        style="display: grid;"
+        :style="`width: ${zoomQty}vw;grid-template-columns: repeat(${rows}, 1fr);grid-auto-rows: minmax(0, 1fr);aspect-ratio: 1 / 1;`"
+      >
+        <!-- Cells -->
+        <button
+          :disabled="isRunning"
+          v-for="c in allCells"
+          class="border border-gray-800 aspect-square h-full w-full disabled:cursor-not-allowed rounded-md"
+          :class="
+            c.active
+              ? 'bg-green-600 duration-[' + intervalSpeed / 2 + ']'
+              : 'duration-[' + intervalSpeed / 2 + ']'
+          "
+          @click="activateCell(c)"
+        ></button>
+      </div>
     </div>
   </div>
 
