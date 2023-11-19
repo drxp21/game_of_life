@@ -11,7 +11,6 @@ export default defineConfig({
     vue(),
     VitePWA({
       injectRegister: "auto",
-      
       registerSWPrompt: (outdatedRegistration, { navigate }) => {
         if (
           confirm(
@@ -22,7 +21,7 @@ export default defineConfig({
           navigate(outdatedRegistration.waiting);
         }
       },
-      registerType: "prompt",
+      registerType: "autoUpdate",
       devOptions: {
         enabled: true,
       },
