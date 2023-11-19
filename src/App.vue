@@ -373,7 +373,7 @@ onBeforeUnmount(() => {
           />
         </div>
       </div>
-      <div class="grid grid-cols-2 justify-center md:flex gap-2 items-start flex-[1]">
+      <div class="grid grid-cols-2 justify-center md:flex gap-2 items-start flex-[3]">
         <!-- Play button -->
         <button
           class="p-3 bg-teal-600 rounded-full shadow-lg text-sm mt-5 flex justify-center"

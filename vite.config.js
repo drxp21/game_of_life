@@ -11,6 +11,7 @@ export default defineConfig({
     vue(),
     VitePWA({
       injectRegister: "auto",
+      
       registerSWPrompt: (outdatedRegistration, { navigate }) => {
         if (
           confirm(
@@ -21,15 +22,15 @@ export default defineConfig({
           navigate(outdatedRegistration.waiting);
         }
       },
-      registerType: "autoUpdate",
+      registerType: "prompt",
       devOptions: {
         enabled: true,
       },
       manifest: {
         background_color: "#7e22ce",
         lang: "fr",
-        name: "Afreekaplay",
-        short_name: "Afreekaplay",
+        name: "The Game of Life ",
+        short_name: "Game of Life",
         icons: [
           {
             src: "icons/icon.png",
