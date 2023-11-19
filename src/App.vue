@@ -118,7 +118,9 @@ const pause = () => {
 };
 const stop = () => {
   pause();
-  modalContent.value = `<strong> Fin de la simulation ✅. </strong> <br /> Cette configuration cellulaire a survécu ${generationCount.value} génération(s)`;
+  modalContent.value = `<strong> Fin de la simulation ✅. </strong> <br /> <div class="text-xs font-semibold">
+    Cette configuration cellulaire a survécu ${generationCount.value} génération(s)
+    </div>`;
   show.value = true;
   generationCount.value = 0;
 };
@@ -179,7 +181,7 @@ const run = () => {
     if (generationCount.value % 2 == 0) {
       // pause the simulation to avoid infinite loop
       if (compareArrays(olderActiveCells.value, activeCells.value)) {
-        modalContent.value = `<strong> Cette configuration cellulaire va tourner indéfiniment 😐.</strong> <br />Elle a survécu ${generationCount.value} génération(s) <br /> Pour changer son déroulement, il suffit d'ajouter une (ou plusieurs) cellule vivante ou d'en retirer .`;
+        modalContent.value = `<strong> Cette configuration cellulaire va tourner indéfiniment 😐.</strong> <br /> <div class="text-xs font-semibold">Elle a survécu ${generationCount.value} génération(s) <br /> Pour changer son déroulement, il suffit d'ajouter une (ou plusieurs) cellule vivante ou d'en retirer .</div>`;
         show.value = true;
         pause();
       }
@@ -496,6 +498,7 @@ onBeforeUnmount(() => {
         </button>
       </div>
     </div>
+   
 
     <!-- Grid  -->
     <div class="overflow-auto h-screen w-full">
