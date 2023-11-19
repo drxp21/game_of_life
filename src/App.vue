@@ -118,7 +118,7 @@ const pause = () => {
 };
 const stop = () => {
   pause();
-  modalContent.value = `<strong class="font-serif"> Fin de la simulation ✅. </strong> <br /> <div class="text-xs">
+  modalContent.value = `<strong class="font-bold"> Fin de la simulation ✅. </strong> <br /> <div class="text-xs">
     Cette configuration cellulaire a survécu ${generationCount.value} génération(s)
     </div>`;
   show.value = true;
@@ -181,7 +181,7 @@ const run = () => {
     if (generationCount.value % 2 == 0) {
       // pause the simulation to avoid infinite loop
       if (compareArrays(olderActiveCells.value, activeCells.value)) {
-        modalContent.value = `<strong class="font-serif"> Cette configuration cellulaire va tourner indéfiniment 😐.</strong> <br /> <div class="text-xs">Elle a survécu ${generationCount.value} génération(s) <br /> Pour changer son déroulement, il suffit d'ajouter une (ou plusieurs) cellule vivante ou d'en retirer .</div>`;
+        modalContent.value = `<strong class="font-bold"> Cette configuration cellulaire va tourner indéfiniment 😐.</strong> <br /> <div class="text-xs">Elle a survécu ${generationCount.value} génération(s) <br /> Pour changer son déroulement, il suffit d'ajouter une (ou plusieurs) cellule vivante ou d'en retirer .</div>`;
         show.value = true;
         pause();
       }
@@ -241,7 +241,10 @@ onBeforeUnmount(() => {
     <div
       class="text-white w-full md:w-56 flex flex-row md:flex-col px-3 md:pt-5 md:pl-5 items-center gap-2 h-44"
     >
-      <div class="w-full flex flex-col md:flex-row items-start flex-[1] gap-3">
+    <div
+     class="text-sm font-bold">Le jeu de la vie</div
+      >
+      <div class="w-full flex flex-col md:flex-row justify-center flex-[1] gap-3">
         <!-- Music toggle button -->
         <button @click="muteOst" class="p-2 rounded-full bg-gray-800 ml-2">
           <svg
