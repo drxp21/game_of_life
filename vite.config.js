@@ -11,6 +11,16 @@ export default defineConfig({
     vue(),
     VitePWA({
       injectRegister: "auto",
+      registerSWPrompt: (outdatedRegistration, { navigate }) => {
+        if (
+          confirm(
+            "Une nouvelle version de l'application est disponible. Souhaitez-vous la mettre à jour ?"
+          )
+        ) {
+          outdatedRegistration.waiting.postMessage({ type: "SKIP_WAITING" });
+          navigate(outdatedRegistration.waiting);
+        }
+      },
       registerType: "autoUpdate",
       devOptions: {
         enabled: true,
@@ -20,12 +30,14 @@ export default defineConfig({
         lang: "fr",
         name: "Afreekaplay",
         short_name: "Afreekaplay",
-        icons: [ {
-          src: "icons/icon.png",
-          sizes: "512x512",
-          type: "image/png",
-          purpose: "maskable any",
-        },],
+        icons: [
+          {
+            src: "icons/icon.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "maskable any",
+          },
+        ],
       },
     }),
   ],
